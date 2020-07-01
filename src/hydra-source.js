@@ -1,4 +1,4 @@
-const Webcam = require('./webcam.js')
+const Webcam = require('./lib/webcam.js')
 const Screen = require('./lib/screenmedia.js')
 
 class HydraSource  {
@@ -10,7 +10,8 @@ class HydraSource  {
     this.width = opts.width
     this.height = opts.height
     this.tex = this.regl.texture({
-      shape: [opts.width, opts.height]
+      shape: [1, 1]
+    //  shape: [opts.width, opts.height]
     })
     this.pb = opts.pb
   }
@@ -28,11 +29,11 @@ class HydraSource  {
     Webcam(index).then((response) => {
       self.src = response.video
       self.tex = self.regl.texture(self.src)
-    })
+    }).catch((err) => console.log('could not get camera', err))
   }
 
   initStream (streamName) {
-    console.log("initing stream!", streamName)
+  //  console.log("initing stream!", streamName)
     let self = this
     if (streamName && this.pb) {
         this.pb.initSource(streamName)
@@ -53,24 +54,37 @@ class HydraSource  {
        self.src = response.video
        self.tex = self.regl.texture(self.src)
      //  console.log("received screen input")
-     })
+   }).catch((err) => console.log('could not get screen', err))
+  }
+
+  resize (width, height) {
+    this.width = width
+    this.height = height
   }
 
   clear () {
+    if(this.src && this.src.srcObject) {
+      if (this.src.srcObject.getTracks) {
+        this.src.srcObject.getTracks().forEach((track) => track.stop())
+      }
+    }
     this.src = null
     this.tex = this.regl.texture({
-      shape: [this.width, this.height]
+      shape: [1, 1]
     })
   }
 
   tick (time) {
-
+    //  console.log(this.src, this.tex.width, this.tex.height)
     if (this.src !== null && this.dynamic === true) {
         if(this.src.videoWidth && this.src.videoWidth !== this.tex.width) {
+          console.log(this.src.videoWidth, this.src.videoHeight, this.tex.width, this.tex.height)
           this.tex.resize(this.src.videoWidth, this.src.videoHeight)
         }
+
+        if(this.src.width && this.src.width !== this.tex.width)   this.tex.resize(this.src.width, this.src.height)
+
         this.tex.subimage(this.src)
-       //this.tex = this.regl.texture(this.src)
     }
   }
 
