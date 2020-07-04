@@ -1217,6 +1217,25 @@ module.exports = [
       vec3 col = vec3(1.) * m;   
       return vec4(col,1.0);
     `
+  },
+  {
+    name: 'smoke',
+    type: 'src',
+    inputs: [
+      {
+        type: 'float',
+        name: 'branches',
+        default: 1.0,
+      }
+    ],
+    glsl:
+    ` 
+      vec2 p = -1.0+2.0*_st;
+      highp int z = int(branches);
+      float w = sin(time+6.5*sqrt(dot(p,p))*cos(p.x));
+      float x = cos(atan(p.y,p.x)*float(z) + 1.8*w);
+      return vec4(x);
+    `
   }
 
 ]
