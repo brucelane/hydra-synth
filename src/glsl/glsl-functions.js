@@ -1156,8 +1156,8 @@ module.exports = [
     ],
     glsl:
     ` 
-      float t = -time*0.03;
       vec2 uv = 2. * _st - 1.;
+      float t = -time*0.03;
       uv.x *= resolution.x/resolution.y;
       uv*= curvature*.05+0.0001;
       float r  = sqrt(dot(uv,uv));
@@ -1201,8 +1201,8 @@ module.exports = [
     glsl:
     ` 
       vec2 uv = (-1.0 + 2.0 *_st);
-      uv.x *= resolution.x/resolution.y;
       float m = 0.;
+      uv.x *= resolution.x/resolution.y;
       for(int i=0;i<3;i++){    
         float f = floor(time*20.) + float(i)*.5;        
         float b = 

@@ -2697,8 +2697,8 @@ module.exports = [
     ],
     glsl:
     ` 
-      float t = -time*0.03;
       vec2 uv = 2. * _st - 1.;
+      float t = -time*0.03;
       uv.x *= resolution.x/resolution.y;
       uv*= curvature*.05+0.0001;
       float r  = sqrt(dot(uv,uv));
@@ -2742,8 +2742,8 @@ module.exports = [
     glsl:
     ` 
       vec2 uv = (-1.0 + 2.0 *_st);
-      uv.x *= resolution.x/resolution.y;
       float m = 0.;
+      uv.x *= resolution.x/resolution.y;
       for(int i=0;i<3;i++){    
         float f = floor(time*20.) + float(i)*.5;        
         float b = 
@@ -2884,11 +2884,11 @@ module.exports = {
   _hash33: {
     type: 'util',
     glsl: `
-      float _vec3 _hash33(vec3 p3)
+      vec3 _hash33(vec3 p3)
       {
         p3 = fract(p3 * vec3(.1031,.11369,.13787));
-          p3 += dot(p3, p3.yxz+19.19);
-          return -1.0 + 2.0 * fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
+        p3 += dot(p3, p3.yxz+19.19);
+        return -1.0 + 2.0 * fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
       }
     `
   },
@@ -2902,7 +2902,7 @@ module.exports = {
         f = f*f*(3.0-2.0*f);
         float n = p.x + p.y*57.0;
         float res = mix(mix( _hash11(n+  0.0), _hash11(n+  1.0),f.x),
-                        mix( 1(n+ 57.0), _hash11(n+ 58.0),f.x),f.y);
+                        mix( _hash11(n+ 57.0), _hash11(n+ 58.0),f.x),f.y);
         return res;	
       }
     `
