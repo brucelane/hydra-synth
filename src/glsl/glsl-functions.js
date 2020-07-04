@@ -1087,7 +1087,7 @@ module.exports = [
       name: 'scale',
       default: 1,
     },
-{
+    {
       type: 'float',
       name: 'offset',
       default: 0,
@@ -1095,5 +1095,33 @@ module.exports = [
   ],
   glsl:
 `   return vec4(_c0.a * scale + offset);`
-}
+},
+{
+  name: 'audiovisual',
+  type: 'src',
+  inputs: [
+    {
+      type: 'float',
+      name: 'wave',
+      default: 1.0,
+    }
+  ],
+  glsl:
+  ` vec2 uv = -1.0+2.0*_st;	
+    vec3 c = vec3(0.0);
+    for(int i = 1; i<20; i++)
+    {
+        float t = 2.*3.14*float(i)/20.* (time*.9);
+        float x = sin(t)*1.8*smoothstep( 0.0, 0.15, abs(wave - uv.y));
+        float y = sin(.5*t) *smoothstep( 0.0, 0.15, abs(wave - uv.y));
+        y*=.5;
+        vec2 o = .4*vec2(x*cos(time*.5),y*sin(time*.3));
+        float red = fract(t);
+        float green = 1.-red;
+        c+=0.016/(length(uv-o))*vec3(red,green,sin(time));
+    }
+    return vec4(c,1.0);
+  `
+  }
+
 ]
