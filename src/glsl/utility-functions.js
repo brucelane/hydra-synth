@@ -107,5 +107,45 @@ module.exports = {
         vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }`
+  },
+  _hash1: {
+    type: 'util',
+    glsl: `
+      float _hash1(float f){
+        return fract(sin(f)*43758.5453);
+      }
+    `
+  },
+  _noise21: {
+    type: 'util',
+    glsl: `
+      float _noise21(vec2 x) {
+        x *= 1.75;
+        vec2 p = floor(x);
+        vec2 f = fract(x);
+        f = f*f*(3.0-2.0*f);
+        float n = p.x + p.y*57.0;
+        float res = mix(mix( _hash1(n+  0.0), _hash1(n+  1.0),f.x),
+                        mix( _hash1(n+ 57.0), _hash1(n+ 58.0),f.x),f.y);
+        return res;	
+      }
+    `
+  },
+  _fbm: {
+    type: 'util',
+    glsl: `
+    float _fbm( vec2 p ) {	
+      float z=2.;
+      float rz = 0.;
+      p *= 0.25;
+      for (float i= 1.;i < 6.;i++ )
+      {		
+        rz+= (sin(_noise21(p)*15.)*0.5+0.5) /z;		
+        z = z*2.;
+        p = p*2.*mat2( 0.80,  0.60, -0.60,  0.80 );
+      }
+      return rz;
+    }
+    `
   }
 }

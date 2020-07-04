@@ -1127,21 +1127,56 @@ module.exports = [
       }
     ],
     glsl:
-      ` vec2 uv = -1.0+2.0*_st;	
-    vec3 c = vec3(0.0);
-    for(int i = 1; i<20; i++)
-    {
-        float t = 2.*3.14*float(i)/20.* (time*.9);
-        float x = sin(t)*1.8*smoothstep( 0.0, 0.15, abs(wave - uv.y));
-        float y = sin(.5*t) *smoothstep( 0.0, 0.15, abs(wave - uv.y));
-        y*=.5;
-        vec2 o = .4*vec2(x*cos(time*.5),y*sin(time*.3));
-        float red = fract(t);
-        float green = 1.-red;
-        c+=0.016/(length(uv-o))*vec3(red,green,sin(time));
-    }
-    return vec4(c,1.0);
-  `
+    ` 
+      vec2 uv = -1.0+2.0*_st;	
+      vec3 c = vec3(0.0);
+      for(int i = 1; i<20; i++)
+      {
+          float t = 2.*3.14*float(i)/20.* (time*.9);
+          float x = sin(t)*1.8*smoothstep( 0.0, 0.15, abs(wave - uv.y));
+          float y = sin(.5*t) *smoothstep( 0.0, 0.15, abs(wave - uv.y));
+          y*=.5;
+          vec2 o = .4*vec2(x*cos(time*.5),y*sin(time*.3));
+          float red = fract(t);
+          float green = 1.-red;
+          c+=0.016/(length(uv-o))*vec3(red,green,sin(time));
+      }
+      return vec4(c,1.0);
+    `
+  },
+  {
+    name: 'flaring',
+    type: 'src',
+    inputs: [
+      {
+        type: 'float',
+        name: 'curvature',
+        default: 10.0,
+      }
+    ],
+    glsl:
+    ` 
+      float t = -time*0.03;
+      vec2 uv = 2. * _st - 1.;
+      uv.x *= resolution.x/resolution.y;
+      uv*= curvature*.05+0.0001;
+      float r  = sqrt(dot(uv,uv));
+      float x = dot(normalize(uv), vec2(.5,0.))+t;	
+      float y = dot(normalize(uv), vec2(.0,.5))+t;
+      float gamma = 4.;
+      float ray_density = 3.14;
+      float val;
+      val = _fbm(vec2(r+y*ray_density,r+x*ray_density-y));
+      val = smoothstep(gamma*.02-.1,20.+(gamma*0.02-.1)+.001,val);
+      val = sqrt(val);
+      float red = 2.9;
+      float green = .7;
+      float blue = 3.5;
+      vec3 col = val/vec3(red,green,blue);
+      col = clamp(1.-col,0.,1.);
+      col = mix(col,vec3(1.),.95-r/0.1/curvature*200./1.5);
+      return vec4(col,1.0);
+    `
   }
 
 ]
