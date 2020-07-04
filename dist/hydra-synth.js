@@ -2777,6 +2777,75 @@ module.exports = [
       float x = cos(atan(p.y,p.x)*float(z) + 1.8*w);
       return vec4(x);
     `
+  },
+  {
+    name: 'colorgrid',
+    type: 'src',
+    inputs: [
+      {
+        type: 'float',
+        name: 'speed',
+        default: 0.1,
+      }
+    ],
+    glsl:
+    ` 
+      float id = 0.5 + 0.5*cos(time + sin(dot(floor(_st*speed+0.5),vec2(113.1,17.81)))*43758.545);
+      vec3  co = 0.5 + 0.5*cos(time + 3.5*id + vec3(0.0,1.57,3.14) );
+      vec2  pa = smoothstep( 0.0, 0.2, id*(0.5 + 0.5*cos(6.2831*_st*speed)) );
+      return vec4( co*pa.x*pa.y, 1.0 );
+    `
+  },
+  {
+    name: 'rainbow',
+    type: 'src',
+    inputs: [
+      {
+        type: 'float',
+        name: 'volume',
+        default: 4.1,
+      }
+    ],
+    glsl:
+    ` 
+      vec2 uv = _st;
+      float c = 3.0;
+      vec3 color = vec3(1.0);
+      color.x = _bump(c * (uv.x - 0.75));
+      color.y = _bump(c * (uv.x - 0.5));
+      color.z = _bump(c * (uv.x - 0.25));
+      uv.y -= 0.5;
+      float line = abs(0.01 / uv.y);   
+      color *= line * (uv.x + volume * 1.5);
+      return vec4(color, 1.0);
+    `
+  },
+  {
+    name: 'floxdots',
+    type: 'src',
+    inputs: [
+      {
+        type: 'float',
+        name: 'divs',
+        default: 12.0,
+      }
+    ],
+    glsl:
+    ` 
+      vec2 div = vec2( divs, divs );
+      vec2 uv = -1.0+2.0*_st;
+      vec2 xy = div*uv;
+      vec2 S;
+      S.x = (xy.x + xy.y)*(xy.x - xy.y)*0.5;
+      S.y = xy.x*xy.y;
+      S.x -= time*3.0;
+      vec2 sxy = sin(3.14159*S);
+      float a = sxy.x * sxy.y;
+      float b = length(sxy)*0.7071;
+      a = smoothstep( 0.85-b, 0.85+b, a );
+      float c = sqrt( a );
+      return vec4(c);
+    `
   }
 
 ]
@@ -2963,7 +3032,34 @@ module.exports = {
       return rz;
     }
     `
-  }
+  },
+  _rotx: {
+    type: 'util',
+    glsl: `vec3 _rotx(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(p.x, c*p.y - s*p.z, s*p.y + c*p.z);
+    }`
+  },
+  _roty: {
+    type: 'util',
+    glsl: `vec3 _roty(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z);
+    }`
+  },
+  _rotz: {
+    type: 'util',
+    glsl: `vec3 _rotz(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(c*p.x - s*p.y, s*p.x + c*p.y, p.z);
+    }`
+  },
+  _bump: {
+    type: 'util',
+    glsl: `float _bump(float x) {
+      return abs(x) > 1.0 ? 0.0 : 1.0 - x * x;
+    }`
+  },
 }
 
 },{}],9:[function(require,module,exports){

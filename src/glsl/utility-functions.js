@@ -179,5 +179,32 @@ module.exports = {
       return rz;
     }
     `
-  }
+  },
+  _rotx: {
+    type: 'util',
+    glsl: `vec3 _rotx(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(p.x, c*p.y - s*p.z, s*p.y + c*p.z);
+    }`
+  },
+  _roty: {
+    type: 'util',
+    glsl: `vec3 _roty(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z);
+    }`
+  },
+  _rotz: {
+    type: 'util',
+    glsl: `vec3 _rotz(vec3 p, float a) {
+      float s = sin(a), c = cos(a);
+      return vec3(c*p.x - s*p.y, s*p.x + c*p.y, p.z);
+    }`
+  },
+  _bump: {
+    type: 'util',
+    glsl: `float _bump(float x) {
+      return abs(x) > 1.0 ? 0.0 : 1.0 - x * x;
+    }`
+  },
 }
