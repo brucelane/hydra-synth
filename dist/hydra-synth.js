@@ -3760,6 +3760,17 @@ Output.prototype.render = function (passes) {
           }
         })
 
+  /* Cinder 20201122  */
+  if (window.socket) {
+    try {
+      
+      window.socket.send(JSON.stringify({event:'frag', message: JSON.stringify(pass.frag) }));
+    } catch (e) {
+      // handle error (server not connected for example)
+      console.log("frag websocket error", JSON.stringify(e))
+    }
+  }
+
   self.draw = self.regl({
     frag: pass.frag,
     vert: self.vert,
